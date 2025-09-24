@@ -3,8 +3,7 @@
 CREATE
     DATABASE IF NOT EXISTS payment_management_system;
 
-USE
-    payment_management_system;
+USE payment_management_system;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -23,7 +22,6 @@ CREATE TABLE IF NOT EXISTS departments
     id          BIGINT PRIMARY KEY,
     name        VARCHAR(100) NOT NULL UNIQUE,
     description TEXT,
-    manager_id  BIGINT,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -33,7 +31,7 @@ CREATE TABLE IF NOT EXISTS agents
 (
     id            BIGINT PRIMARY KEY,
     user_id       BIGINT NOT NULL,
-    type          ENUM ('employee', 'department_manager', 'director', 'intern'),
+    type          ENUM ('employee', 'manager', 'director', 'intern'),
     department_id BIGINT NULL,
     start_date    TIMESTAMP,
     salary        DECIMAL(10, 2),
