@@ -4,12 +4,7 @@ import com.paymentmanagement.model.Agent;
 
 import java.util.List;
 
-public interface AgentDAO {
-    Agent save(Agent agent);
-    Agent update(Agent agent);
-    boolean delete(int id);
-    List<Agent> findAll();
-    Agent findById(int id);
+public interface AgentDAO extends GenericDAO<Agent> {
     Agent findByEmail(String email);
-    List<Agent> findByDeparment(String department);
+    List<Agent> findByDepartment(String department);
 }

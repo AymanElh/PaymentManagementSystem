@@ -3,20 +3,26 @@ package com.paymentmanagement.dao;
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.config.DatabaseConnection;
 import com.paymentmanagement.model.AgentType;
+import com.paymentmanagement.model.Department;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import java.util.Date;
 import java.util.List;
 
-public class AgentDAOImp implements AgentDAO{
+public class AgentDAOImp implements AgentDAO {
     private final DatabaseConnection dbConnection;
+    private final DepartmentDAO departmentDAO;
 
-    public AgentDAOImp(DatabaseConnection dbConnection) {
+    public AgentDAOImp(DatabaseConnection dbConnection, DepartmentDAO departmentDAO) {
         this.dbConnection = dbConnection;
+        this.departmentDAO = departmentDAO;
     }
+
 
     @Override
     public Agent save(Agent agent) {
@@ -92,21 +98,21 @@ public class AgentDAOImp implements AgentDAO{
         try {
             connection = dbConnection.getConnection();
 
-            String userQuery = "UPDATE users SET first_name = ? , last_name = ? , email = ? , password = ? , phone = ?";
+            String userQuery = "UPDATE users SET first_name = ? , last_name = ? , email = ? , password = ? , phone = ? WHERE id = ?";
             userStmt = connection.prepareStatement(userQuery);
             userStmt.setString(1, agent.getFirstName());
             userStmt.setString(2, agent.getLastName());
             userStmt.setString(3, agent.getEmail());
             userStmt.setString(4, agent.getPassword());
             userStmt.setString(5,  agent.getPhone());
+            userStmt.setInt(6, agent.getUserId());
 
-            String agentQuery = "UPDATE agents SET first_name = ? , last_name = ? , email = ? , password = ? , phone = ?";
+            String agentQuery = "UPDATE agents SET type = ? , department_id = ? , is_active = ? WHERE id = ?";
             agentStmt = connection.prepareStatement(agentQuery);
-            agentStmt.setString(1, agent.getFirstName());
-            agentStmt.setString(2, agent.getLastName());
-            agentStmt.setString(3, agent.getEmail());
-            agentStmt.setString(4, agent.getPassword());
-            agentStmt.setString(5,  agent.getPhone());
+            agentStmt.setString(1, agent.getAgentType().name().toLowerCase());
+            agentStmt.setObject(2, agent.getDepartment() != null ? agent.getDepartment().getId() : null);
+            agentStmt.setBoolean(3, agent.getIsActive());
+            agentStmt.setInt(4, agent.getId());
 
             int userRowsAffected = userStmt.executeUpdate();
             int agentRowsAffected = agentStmt.executeUpdate();
@@ -152,11 +158,13 @@ public class AgentDAOImp implements AgentDAO{
                 """;
         try (Connection connection = dbConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(query);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                agents.add(convertResultToAgent(rs));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Agent agent = convertResultToAgent(rs);
+                    agents.add(agent);
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -210,7 +218,7 @@ public class AgentDAOImp implements AgentDAO{
     }
 
     @Override
-    public List<Agent> findByDeparment(String department) {
+    public List<Agent> findByDepartment(String department) {
         List<Agent> agentsByDep = new ArrayList<>();
         String query = """
                     SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.phone, 
@@ -235,20 +243,44 @@ public class AgentDAOImp implements AgentDAO{
 
     // helper method for converting data from a database into Agent object
     private Agent convertResultToAgent(ResultSet rs) throws SQLException {
+        String firstName = rs.getString("first_name");
+        String lastName = rs.getString("last_name");
+        String email = rs.getString("email");
+        String phone = rs.getString("phone");
+        String type = rs.getString("type");
+        int id = rs.getInt("id");
+        int userId = rs.getInt("user_id");
+        boolean isActive = rs.getBoolean("is_active");
+        Date startDate = rs.getDate("start_date");
+        int departmentId = rs.getInt("department_id");
+        // System.out.println(rs); // Optionally remove or comment out
+
+        Department department = null;
+        if (departmentId > 0) {
+            try {
+                department = departmentDAO.findById(departmentId);
+            } catch (Exception e) {
+                System.err.println("Couldn't load department: " + departmentId + ":" + e.getMessage());
+                // Optionally create a Department with just the ID if needed
+//                department = new Department();
+                department.setId(departmentId);
+                System.err.println("Couldn't load department: " + departmentId + ":" + e.getMessage());
+            }
+        }
         Agent agent = new Agent(
-                rs.getInt("user_id"),
-                rs.getInt("id"),
-                rs.getString("first_name"),
-                rs.getString("last_name"),
-                rs.getString("email"),
+                firstName,
+                lastName,
+                email,
                 "",
-                rs.getString("phone"),
-                AgentType.valueOf(rs.getString("type").toUpperCase()),
-                rs.getBoolean("is_active"),
-                rs.getDate("start_date"),
-                null
+                phone,
+                AgentType.valueOf(type.toUpperCase()),
+                department
         );
 
+        agent.setId(id);
+        agent.setUserId(userId);
+        agent.setActive(isActive);
+        agent.setStartDate(startDate);
         return agent;
     }
 }

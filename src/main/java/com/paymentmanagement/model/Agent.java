@@ -14,6 +14,13 @@ public class Agent extends User {
 
     // Constructors
 
+    public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.agentType = agentType;
+        this.department = department;
+    }
+
     public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department, List<Payment> payments) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
@@ -31,7 +38,7 @@ public class Agent extends User {
         this.startDate = startDate;
     }
 
-    public Agent(int userId, int agentId, String firstName, String lastName, String email, String password, String phone, 
+    public Agent(int userId, int agentId, String firstName, String lastName, String email, String password, String phone,
                  AgentType agentType, boolean isActive, Date startDate, Department department) {
         super(userId, firstName, lastName, email, password, phone);
         this.id = agentId;
@@ -88,6 +95,9 @@ public class Agent extends User {
     public int getUserId() {
         return super.getId();
     }
+    public void setUserId(int id) {
+        super.setId(id);
+    }
 
     public int getId() {
         return this.id;
@@ -108,6 +118,18 @@ public class Agent extends User {
 
     @Override
     public String toString() {
-        return String.format("-- Agent info -- \n \t Id: %d \n \t First Name: %s \n \t LastName: %s \n \t Email: %s \n \t Phone: %s \n \t Type: %s \n \t Department: %s \n \t Start date %s \n ", getId(), getFirstName(), getLastName(), getEmail(), getPhone(), getAgentType().name(), department.getName(), getStartDateAsString());
+
+        return String.format("""
+                        -- Agent info -- 
+                        \t Id: %d 
+                        \t First Name: %s 
+                        \t LastName: %s 
+                        \t Email: %s 
+                        \t Phone: %s 
+                        \t Department: %s 
+                        \t Type: %s  
+                        \t Start date %s 
+                        """,
+                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), department.getName(), getAgentType().name(), getStartDateAsString());
     }
 }

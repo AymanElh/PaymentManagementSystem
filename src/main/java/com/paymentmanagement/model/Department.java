@@ -5,10 +5,10 @@ public class Department {
     private String name;
     private String description;
 
-    public Department(int id, String description, String name) {
+    public Department(int id, String name, String description) {
         this.id = id;
-        this.description = description;
         this.name = name;
+        this.description = description;
     }
 
     public String getDescription() {
