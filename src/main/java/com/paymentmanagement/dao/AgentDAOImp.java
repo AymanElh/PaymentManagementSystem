@@ -218,7 +218,7 @@ public class AgentDAOImp implements AgentDAO {
     }
 
     @Override
-    public List<Agent> findByDepartment(String department) {
+    public List<Agent> findByDepartment(int departmentId) {
         List<Agent> agentsByDep = new ArrayList<>();
         String query = """
                     SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.phone, 
@@ -230,7 +230,7 @@ public class AgentDAOImp implements AgentDAO {
                 """;
         try (Connection connection = dbConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(query);
-            stmt.setString(1, department);
+            stmt.setInt(1, departmentId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 agentsByDep.add(convertResultToAgent(rs));
