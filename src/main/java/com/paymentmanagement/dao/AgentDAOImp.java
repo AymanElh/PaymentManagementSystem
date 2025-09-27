@@ -16,11 +16,9 @@ import java.util.List;
 
 public class AgentDAOImp implements AgentDAO {
     private final DatabaseConnection dbConnection;
-    private final DepartmentDAO departmentDAO;
 
-    public AgentDAOImp(DatabaseConnection dbConnection, DepartmentDAO departmentDAO) {
+    public AgentDAOImp(DatabaseConnection dbConnection) {
         this.dbConnection = dbConnection;
-        this.departmentDAO = departmentDAO;
     }
 
 
@@ -29,10 +27,8 @@ public class AgentDAOImp implements AgentDAO {
         Connection connection = null;
         PreparedStatement userStmt = null;
         PreparedStatement agentStmt = null;
-
         try {
             connection = dbConnection.getConnection();
-
             // Start transaction
             connection.setAutoCommit(false);
 
@@ -152,20 +148,24 @@ public class AgentDAOImp implements AgentDAO {
         List<Agent> agents = new ArrayList<>();
         String query = """
                     SELECT u.id as user_id, u.first_name, u.last_name, u.email, u.phone,
-                           a.id, a.type, a.department_id, a.start_date, a.is_active
+                           a.id, a.type, a.start_date, a.is_active,
+                           d.id AS department_id, d.name AS department_name, d.description AS department_description
                     FROM users u
                     JOIN agents a ON a.user_id = u.id
+                    JOIN departments d ON d.id = a.department_id
                 """;
         try (Connection connection = dbConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(query);
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Agent agent = convertResultToAgent(rs);
-                    agents.add(agent);
-                }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Agent agent = convertResultToAgent(rs);
+                agents.add(agent);
             }
 
+        } catch (SQLException e) {
+            System.err.println("Error on get all agents: " + e.getMessage());
         } catch (Exception e) {
+            System.out.println("Exception: ");
             e.printStackTrace();
         }
         return agents;
@@ -253,19 +253,13 @@ public class AgentDAOImp implements AgentDAO {
         boolean isActive = rs.getBoolean("is_active");
         Date startDate = rs.getDate("start_date");
         int departmentId = rs.getInt("department_id");
-        // System.out.println(rs); // Optionally remove or comment out
+        String departmentName = rs.getString("department_name");
+        String departmentDescription = rs.getString("department_description");
 
+        System.out.println(departmentDescription + departmentName + departmentId);
         Department department = null;
         if (departmentId > 0) {
-            try {
-                department = departmentDAO.findById(departmentId);
-            } catch (Exception e) {
-                System.err.println("Couldn't load department: " + departmentId + ":" + e.getMessage());
-                // Optionally create a Department with just the ID if needed
-//                department = new Department();
-                department.setId(departmentId);
-                System.err.println("Couldn't load department: " + departmentId + ":" + e.getMessage());
-            }
+            department = new Department(departmentId, departmentName, departmentDescription);
         }
         Agent agent = new Agent(
                 firstName,

@@ -86,10 +86,11 @@ public class DepartmentDAO implements GenericDAO<Department>{
 
     @Override
     public Department findById(int id) {
-        try (Connection conn = dbConnection.getConnection()) {
+        try(Connection conn = dbConnection.getConnection();) {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM departments WHERE id = ?");
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
+            Department department = null;
             if(rs.next()) {
                 return convertResultIntoDepartment(rs);
             }

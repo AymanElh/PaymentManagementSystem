@@ -35,12 +35,5 @@ public class Department {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Department{" +
-                "description='" + description + '\'' +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
+
 }
