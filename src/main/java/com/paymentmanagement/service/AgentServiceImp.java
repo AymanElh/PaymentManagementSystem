@@ -1,0 +1,51 @@
+package com.paymentmanagement.service;
+
+import com.paymentmanagement.model.Agent;
+import com.paymentmanagement.model.AgentType;
+import com.paymentmanagement.repository.AgentRepository;
+
+public class AgentServiceImp implements AgentService  {
+    private final AgentRepository agentRepository;
+
+    public AgentServiceImp(AgentRepository agentRepository) {
+        this.agentRepository = agentRepository;
+    }
+
+    @Override
+    public Agent addEmployee(Agent agent) throws Exception {
+        if(!agent.getEmail().contains("@")) {
+            throw new Exception("Email not valid");
+        }
+
+        if(agent.getPassword().length() < 6) {
+            throw new Exception("Password invalid");
+        }
+        agent.setAgentType(AgentType.EMPLOYEE);
+        return agentRepository.createAgent(agent);
+    }
+
+    @Override
+    public Agent addManager(Agent agent) throws Exception {
+        if(!agent.getEmail().contains("@")) {
+            throw new Exception("Email not valid");
+        }
+
+        if(agent.getPassword().length() < 6) {
+            throw new Exception("Password invalid");
+        }
+        agent.setAgentType(AgentType.MANAGER);
+        return agent;
+    }
+
+
+    @Override
+    public Agent desactivateAgent(int agentId) throws Exception {
+        Agent agent = agentRepository.getAgentById(agentId);
+        if(agent == null) {
+            throw new Exception("Agent not found");
+        }
+
+        agent.setActive(false);
+        return agentRepository.updateAgent(agent);
+    }
+}

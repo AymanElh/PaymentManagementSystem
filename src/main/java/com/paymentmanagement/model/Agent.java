@@ -14,6 +14,13 @@ public class Agent extends User {
 
     // Constructors
 
+    // Constructor for agent service
+    public Agent(String firstName, String lastName, String email, String password, String phone, Department department) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.department = department;
+    }
+
     public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
