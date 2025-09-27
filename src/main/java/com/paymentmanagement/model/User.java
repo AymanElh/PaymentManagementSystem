@@ -8,12 +8,36 @@ public abstract class User {
     private String password;
     private String phone;
 
+    private User() {
+        id = generateUserId();
+    }
+
+    // Constructor for creating new users (generates ID)
     public User(String firstName, String lastName, String email, String password, String phone) {
+        this();
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.phone = phone;
+    }
+
+    // Constructor for loading from database (no ID generation)
+    protected User(int id, String firstName, String lastName, String email, String password, String phone) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -56,6 +80,10 @@ public abstract class User {
         this.phone = phone;
     }
 
+    private int generateUserId() {
+        return this.id = (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -63,7 +91,6 @@ public abstract class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
                 '}';
     }

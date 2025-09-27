@@ -1,4 +1,4 @@
-package com.paymentmanagement.util;
+package com.paymentmanagement.config;
 
 import java.io.IOException;
 import java.io.InputStream;
