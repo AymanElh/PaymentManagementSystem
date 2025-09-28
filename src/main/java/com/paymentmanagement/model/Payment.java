@@ -11,6 +11,14 @@ public class Payment {
     private boolean conditionValidation;
     private Agent agent;
 
+    // Constructor for payment service
+    public Payment(Agent agent, double amount, boolean conditionValidation, Date paymentDate) {
+        this.agent = agent;
+        this.amount = amount;
+        this.conditionValidation = conditionValidation;
+        this.paymentDate = paymentDate;
+    }
+
     public Payment(Agent agent, double amount, boolean conditionValidation, Date paymentDate, PaymentType paymentType) {
         this.agent = agent;
         this.amount = amount;

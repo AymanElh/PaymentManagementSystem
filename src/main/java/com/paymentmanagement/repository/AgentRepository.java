@@ -33,7 +33,7 @@ public class AgentRepository {
         return agentDAO.update(agent);
     }
 
-    public boolean deleteeAgent(int id) {
+    public boolean deleteAgent(int id) {
         return agentDAO.delete(id);
     }
 

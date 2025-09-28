@@ -4,6 +4,9 @@ import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.repository.AgentRepository;
 
+import java.util.List;
+import java.util.Optional;
+
 public class AgentServiceImp implements AgentService  {
     private final AgentRepository agentRepository;
 
@@ -47,5 +50,15 @@ public class AgentServiceImp implements AgentService  {
 
         agent.setActive(false);
         return agentRepository.updateAgent(agent);
+    }
+
+    @Override
+    public List<Agent> getEmployeesOnDepartment(int departmentId) {
+        return agentRepository.getEmployeesByDepartmentId(departmentId);
+    }
+
+    @Override
+    public Optional<Agent> getDepartmentManager(int departmentId) {
+        return agentRepository.getDepartmentManager(departmentId);
     }
 }

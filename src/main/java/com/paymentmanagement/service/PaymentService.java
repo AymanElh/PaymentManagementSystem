@@ -1,0 +1,10 @@
+package com.paymentmanagement.service;
+
+import com.paymentmanagement.model.Payment;
+
+public interface PaymentService {
+    Payment addSalaryToAgent(Payment payment) throws Exception;
+    Payment addPrimeToAgent(Payment payment);
+    Payment addBonusToAgent(Payment payment);
+
+}

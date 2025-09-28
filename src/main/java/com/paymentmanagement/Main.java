@@ -16,7 +16,7 @@ import java.util.List;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         DatabaseConnection dbConnection = DatabaseConnection.getInstance();
         GenericDAO<Agent> agentDAO = new AgentDAOImp(dbConnection);
 
@@ -36,7 +36,6 @@ public class Main {
 
 //        System.out.println(agent1);
 //        agent1.setDepartment();
-
         try {
             List<Agent> agents = agentDAO.findAll();
             System.out.println(agents.size());
