@@ -1,5 +1,7 @@
 package com.paymentmanagement.service;
 
+import com.paymentmanagement.model.LoginSession;
+
 public interface AuthService {
-    boolean login(String email, String password);
+    LoginSession login(String email, String password) throws Exception;
 }
