@@ -57,11 +57,7 @@ public class ConsoleView {
             String email = menuService.readString("Email");
             String password = menuService.readString("password");
 
-            if(authService.login(email, password)) {
-                System.out.println("Login successfully");
-            } else {
-                System.out.println("Invalid email or password");
-            }
+
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
