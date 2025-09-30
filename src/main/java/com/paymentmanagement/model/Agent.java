@@ -125,6 +125,7 @@ public class Agent extends User {
 
     @Override
     public String toString() {
+        String departmentName = (department != null) ? department.getName() : "No Department";
 
         return String.format("""
                         -- Agent info -- 
@@ -135,8 +136,7 @@ public class Agent extends User {
                         \t Phone: %s 
                         \t Department: %s 
                         \t Type: %s  
-                        \t Start date %s 
                         """,
-                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), department.getName(), getAgentType().name(), getStartDateAsString());
+                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name());
     }
 }

@@ -16,7 +16,7 @@ public class AuthServiceImp implements AuthService{
 
     @Override
     public LoginSession login(String email, String password) throws Exception {
-        if(email == null || !email.trim().isEmpty() || !email.contains("@")) {
+        if(email == null || email.trim().isEmpty() || !email.contains("@")) {
             throw new Exception("Invalid email");
         }
 
@@ -25,16 +25,28 @@ public class AuthServiceImp implements AuthService{
         }
 
         Agent agent = agentRepository.getAgentByEmail(email);
-        if(agent.getPassword() != password) {
+        System.out.println(agent.getPassword());
+
+        if(agent == null) {
+            throw new Exception("Invalid email or password");
+        }
+
+        if(!agent.getPassword().equals(password)) {
             throw new Exception("Invalid email or password");
         }
 
         if(!agent.getIsActive()) {
-            throw new Exception("Account disactivated");
+            throw new RuntimeException("Account disactivated");
         }
 
         currentUser = new LoginSession(agent);
         System.out.println("Login successfully: " + currentUser.getUserName());
         return currentUser;
     }
+
+    @Override
+    public LoginSession getCurrentUser() {
+        return currentUser;
+    }
+
 }

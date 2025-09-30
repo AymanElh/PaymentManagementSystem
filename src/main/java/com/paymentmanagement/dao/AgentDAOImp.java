@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public class AgentDAOImp implements AgentDAO {
     private final DatabaseConnection dbConnection;
@@ -152,7 +153,7 @@ public class AgentDAOImp implements AgentDAO {
                            d.id AS department_id, d.name AS department_name, d.description AS department_description
                     FROM users u
                     JOIN agents a ON a.user_id = u.id
-                    JOIN departments d ON d.id = a.department_id
+                    LEFT JOIN departments d ON d.id = a.department_id
                 """;
         try (Connection connection = dbConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(query);
@@ -197,11 +198,12 @@ public class AgentDAOImp implements AgentDAO {
     @Override
     public Agent findByEmail(String email) {
         String query = """
-                    SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.phone, 
-                    a.type, a.department_id, a.start_date, a.is_active
+                    SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.password, u.phone, 
+                    a.type, a.department_id AS department_id, d.name AS department_name, d.description AS department_description, a.start_date, a.is_active
                     FROM users u
                     JOIN agents a ON a.user_id = u.id
-                    WHERE a.id = ?
+                    LEFT JOIN departments d ON d.id = a.department_id
+                    WHERE u.email = ?
                     LIMIT 1;
                 """;
         try (Connection connection = dbConnection.getConnection()) {
@@ -221,7 +223,7 @@ public class AgentDAOImp implements AgentDAO {
     public List<Agent> findByDepartment(int departmentId) {
         List<Agent> agentsByDep = new ArrayList<>();
         String query = """
-                    SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.phone, 
+                    SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.password AS password, u.phone, 
                     a.type, a.department_id, a.start_date, a.is_active
                     FROM users u
                     JOIN agents a ON a.user_id = u.id
@@ -246,26 +248,29 @@ public class AgentDAOImp implements AgentDAO {
         String firstName = rs.getString("first_name");
         String lastName = rs.getString("last_name");
         String email = rs.getString("email");
+        String password = rs.getString("password");
         String phone = rs.getString("phone");
         String type = rs.getString("type");
         int id = rs.getInt("id");
         int userId = rs.getInt("user_id");
         boolean isActive = rs.getBoolean("is_active");
         Date startDate = rs.getDate("start_date");
-        int departmentId = rs.getInt("department_id");
+
+        // Handle nullable department fields
+        Integer departmentId = rs.getObject("department_id", Integer.class);
         String departmentName = rs.getString("department_name");
         String departmentDescription = rs.getString("department_description");
 
-        System.out.println(departmentDescription + departmentName + departmentId);
         Department department = null;
-        if (departmentId > 0) {
+        if (departmentId != null && departmentId > 0) {
             department = new Department(departmentId, departmentName, departmentDescription);
         }
+
         Agent agent = new Agent(
                 firstName,
                 lastName,
                 email,
-                "",
+                password,
                 phone,
                 AgentType.valueOf(type.toUpperCase()),
                 department

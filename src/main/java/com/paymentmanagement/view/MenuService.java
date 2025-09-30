@@ -11,7 +11,7 @@ public class MenuService {
     }
 
     public int displayMenuAndGetChoice(String title, List<MenuItem> menuItems) {
-        displayHeader(title);
+        displayTitle(title);
         for(MenuItem item: menuItems) {
             System.out.println(item);
         }
@@ -22,12 +22,26 @@ public class MenuService {
 
     public String readString(String prompt) {
         System.out.print(prompt + ": ");
-        return scanner.nextLine();
+        return scanner.next();
     }
 
-    public int readInt(String prompt) {
-        System.out.println(prompt + ": ");
-        return scanner.nextInt();
+    public Integer readInt(String prompt) {
+        while(true) {
+            try {
+                System.out.print(prompt + ": ");
+                return Integer.parseInt(scanner.next().trim());
+            } catch (NumberFormatException e) {
+                showError("Please enter a valid number");
+            }
+        }
+    }
+
+    public void showSuccess(String message) {
+        System.out.println("Success: " + message);
+    }
+
+    public void showError(String message) {
+        System.out.println("Error: " + message);
     }
 
     public void displayHeader(String title) {
@@ -36,6 +50,13 @@ public class MenuService {
         System.out.println("=".repeat(60));
     }
 
+    public void displayTitle(String title) {
+        System.out.println("----------   " + title + "   --------------");
+    }
+
+    public void displaySeperator() {
+        System.out.println("-".repeat(100));
+    }
 
     public String centerText(String text, int width) {
         int padding = (width - text.length()) / 2;

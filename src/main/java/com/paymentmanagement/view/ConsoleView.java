@@ -1,54 +1,60 @@
 package com.paymentmanagement.view;
 
+import com.paymentmanagement.model.AgentType;
+import com.paymentmanagement.model.LoginSession;
 import com.paymentmanagement.service.AgentService;
 import com.paymentmanagement.service.AuthService;
 import com.paymentmanagement.service.DepartmentService;
 import com.paymentmanagement.service.PaymentService;
+import com.paymentmanagement.view.menu.DirectorMenu;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-public class ConsoleView {
+public class ConsoleView extends BaseMenu {
     private final AuthService authService;
     private final AgentService agentService;
-    private final DepartmentService departmentService;
     private final PaymentService paymentService;
-    private final Scanner scanner;
-    private final MenuService menuService;
+    private final DepartmentService departmentService;
 
-    public ConsoleView(AgentService agentService, AuthService authService, DepartmentService departmentService, PaymentService paymentService, Scanner scanner, MenuService menuService) {
+
+    public ConsoleView(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, AuthService authService1, PaymentService paymentService, DepartmentService departmentService) {
+        super(authService, menuService, scanner);
         this.agentService = agentService;
-        this.authService = authService;
-        this.departmentService = departmentService;
+        this.authService = authService1;
         this.paymentService = paymentService;
-        this.scanner = scanner;
-        this.menuService = menuService;
+        this.departmentService = departmentService;
     }
 
-    public List<MenuItem> getMenuItems() {
+
+    @Override
+    protected List<MenuItem> getMenuItems() {
         return Arrays.asList(
                 new MenuItem(1, "Login"),
-                new MenuItem(2, "Exit")
+                new MenuItem(0, "Exit")
         );
+    }
+
+    @Override
+    protected String getMenuTitle() {
+        return "Payment Management System - Main menu";
     }
 
     public void show() {
         menuService.displayHeader("Welcome to Payment management system");
-        while(true) {
-            List<MenuItem> menuItems = getMenuItems();
-            int choice = menuService.displayMenuAndGetChoice("Payment management system - Main Menu", menuItems);
+        runMenu();
+    }
 
-            switch (choice) {
-                case 1:
-                    handleLogin();
-                    break;
-                case 0:
-                    System.exit(0);
-                default:
-                    System.out.println("Error: Invalid choice");
-                    break;
-            }
+    @Override
+    protected void handleChoice(int choice) {
+        switch (choice) {
+            case 1:
+                handleLogin();
+                break;
+            default:
+                menuService.showError("Invalid choice");
+                break;
         }
     }
 
@@ -57,7 +63,21 @@ public class ConsoleView {
             String email = menuService.readString("Email");
             String password = menuService.readString("password");
 
+            LoginSession currentUser = authService.login(email, password);
 
+            if(currentUser != null) {
+                menuService.showSuccess("Welcome: " + currentUser.getUserName());
+
+                AgentType currentUserType = currentUser.getCurrentLoggedAgent().getAgentType();
+                if(currentUserType == AgentType.DIRECTOR) {
+                    DirectorMenu directorMenu = new DirectorMenu(authService, menuService, scanner, agentService, departmentService);
+                    directorMenu.show();
+                } else if(currentUserType == AgentType.MANAGER) {
+
+                } else if(currentUserType == AgentType.EMPLOYEE) {
+
+                }
+            }
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
