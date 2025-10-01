@@ -46,5 +46,13 @@ public class Department {
         return Math.abs(this.name.hashCode()) % 10000;
     }
 
-    
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                ", id=" + id +
+                "description='" + description + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

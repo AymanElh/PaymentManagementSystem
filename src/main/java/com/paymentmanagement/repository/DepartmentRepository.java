@@ -16,6 +16,10 @@ public class DepartmentRepository {
         return departmentDAO.findById(id);
     }
 
+    public Department getDepartmentByName(String name) {
+        return departmentDAO.findByName(name);
+    }
+
     public List<Department> getAllDepartments() {
         return departmentDAO.findAll();
     }

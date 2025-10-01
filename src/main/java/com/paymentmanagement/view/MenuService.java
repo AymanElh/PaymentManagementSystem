@@ -25,6 +25,17 @@ public class MenuService {
         return scanner.next();
     }
 
+    public Double readDouble(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt + ": ");
+                return Double.parseDouble(scanner.next().trim());
+            } catch (NumberFormatException e) {
+                showError("Please enter a valid decimal number");
+            }
+        }
+    }
+
     public Integer readInt(String prompt) {
         while(true) {
             try {

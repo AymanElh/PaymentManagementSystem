@@ -28,16 +28,16 @@ public class AgentServiceImp implements AgentService  {
     }
 
     @Override
-    public Agent addManager(Agent agent) throws Exception {
-        if(!agent.getEmail().contains("@")) {
+    public Agent addManager(Agent manager) throws Exception {
+        if(!manager.getEmail().contains("@")) {
             throw new Exception("Email not valid");
         }
 
-        if(agent.getPassword().length() < 6) {
+        if(manager.getPassword().length() < 6) {
             throw new Exception("Password invalid");
         }
-        agent.setAgentType(AgentType.MANAGER);
-        return agent;
+        manager.setAgentType(AgentType.MANAGER);
+        return agentRepository.createAgent(manager);
     }
 
 

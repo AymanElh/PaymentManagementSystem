@@ -54,7 +54,7 @@ public class AgentDAOImp implements AgentDAO {
             agentStmt.setInt(2, agent.getUserId());
             agentStmt.setString(3, agent.getAgentType().name().toLowerCase());
             agentStmt.setObject(4, agent.getDepartment() != null ? agent.getDepartment().getId() : null);
-            agentStmt.setString(5, agent.getStartDateAsString());
+            agentStmt.setString(5, agent.getStartDateAsString() != null ? agent.getStartDateAsString() : null);
             agentStmt.setBoolean(6, agent.getIsActive());
             int agentRowsAffected = agentStmt.executeUpdate();
             if (agentRowsAffected == 0) {

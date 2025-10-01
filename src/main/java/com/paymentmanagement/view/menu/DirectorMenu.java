@@ -9,10 +9,9 @@ import com.paymentmanagement.view.BaseMenu;
 import com.paymentmanagement.view.MenuItem;
 import com.paymentmanagement.view.MenuService;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DirectorMenu extends BaseMenu {
     private final DepartmentService departmentService;
@@ -78,16 +77,20 @@ public class DirectorMenu extends BaseMenu {
         String email = menuService.readString("Email");
         String password = menuService.readString("Password");
         String phone = menuService.readString("Phone");
+        String startDate = menuService.readString("Start date");
 
-        Department dep = chooseDepartmentForManager();
-
-        Agent agent = new Agent(firstName, lastName, email, password, phone, dep);
         try {
+            Date date = (new SimpleDateFormat("YYYY-mm-dd")).parse(startDate);
+            Department dep = chooseDepartmentForManager();
+            Agent agent = new Agent(firstName, lastName, email, password, phone, date, dep);
             agentService.addManager(agent);
+        }catch (ParseException e) {
+            System.out.println("Error parsing date: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Error of adding manager: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in adding manager: " + e.getMessage());
+            return;
         }
+
     }
 
     private Department chooseDepartmentForManager() {
@@ -121,7 +124,12 @@ public class DirectorMenu extends BaseMenu {
         menuService.displayHeader("Enter department info");
         String name = menuService.readString("Name");
         String description = menuService.readString("Description");
-        departmentService.addDepartment(new Department(name, description));
+        Department created = departmentService.addDepartment(new Department(name, description));
+        if (created == null) {
+            menuService.showError("Department '" + name + "' already exists or could not be created.");
+        } else {
+            menuService.showSuccess("Department '" + created.getName() + "' created successfully.");
+        }
     }
 
     private void deleteDepartment() {
@@ -141,7 +149,6 @@ public class DirectorMenu extends BaseMenu {
 
     private void viewAllDepartments() {
         List<Department> departments = departmentService.getAllDepartments();
-        System.out.println(departments);
         for(Department department: departments) {
             System.out.println(department);
         }

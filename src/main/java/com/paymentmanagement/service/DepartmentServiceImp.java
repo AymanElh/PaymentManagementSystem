@@ -17,6 +17,17 @@ public class DepartmentServiceImp implements DepartmentService{
 
     @Override
     public Department addDepartment(Department department) {
+        if (department == null || department.getName() == null) return null;
+        String name = department.getName().trim();
+        if (name.isEmpty()) return null;
+
+        // Pre-check to avoid DB exception and provide clear feedback
+        Department existing = departmentRepository.getDepartmentById(department.getId());
+        if (existing != null) {
+            return null;
+        }
+
+        // Proceed to create; DAO will also return null if a race causes a duplicate
         return departmentRepository.createDepartment(department);
     }
 

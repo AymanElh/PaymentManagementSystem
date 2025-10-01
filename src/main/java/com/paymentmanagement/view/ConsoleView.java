@@ -7,6 +7,7 @@ import com.paymentmanagement.service.AuthService;
 import com.paymentmanagement.service.DepartmentService;
 import com.paymentmanagement.service.PaymentService;
 import com.paymentmanagement.view.menu.DirectorMenu;
+import com.paymentmanagement.view.menu.ManagerMenu;
 
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +74,8 @@ public class ConsoleView extends BaseMenu {
                     DirectorMenu directorMenu = new DirectorMenu(authService, menuService, scanner, agentService, departmentService);
                     directorMenu.show();
                 } else if(currentUserType == AgentType.MANAGER) {
-
+                    ManagerMenu managerMenu = new ManagerMenu(authService, menuService, scanner, agentService, paymentService);
+                    managerMenu.show();
                 } else if(currentUserType == AgentType.EMPLOYEE) {
 
                 }
