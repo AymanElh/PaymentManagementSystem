@@ -25,6 +25,7 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
             stmt.setDouble(2, payment.getAmount());
             stmt.setString(3, payment.getDateAsString());
             stmt.setBoolean(4, payment.isConditionValidation());
+            stmt.setInt(5, payment.getAgent().getId());
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
@@ -32,8 +33,8 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
             }
             return payment;
         } catch (SQLException e) {
-            System.err.print("Database error while saving payment: " + e.getMessage());
-            throw new RuntimeException("Failed to save payment on database");
+//            System.err.print("Database error while saving payment: " + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

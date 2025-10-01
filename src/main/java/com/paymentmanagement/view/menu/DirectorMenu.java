@@ -78,11 +78,12 @@ public class DirectorMenu extends BaseMenu {
         String password = menuService.readString("Password");
         String phone = menuService.readString("Phone");
         String startDate = menuService.readString("Start date");
+        double salary = menuService.readDouble("Salary");
 
         try {
             Date date = (new SimpleDateFormat("YYYY-mm-dd")).parse(startDate);
             Department dep = chooseDepartmentForManager();
-            Agent agent = new Agent(firstName, lastName, email, password, phone, date, dep);
+            Agent agent = new Agent(firstName, lastName, email, password, phone, date, salary, dep);
             agentService.addManager(agent);
         }catch (ParseException e) {
             System.out.println("Error parsing date: " + e.getMessage());

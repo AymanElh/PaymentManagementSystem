@@ -1,7 +1,6 @@
 package com.paymentmanagement.view.menu;
 
 import com.paymentmanagement.model.Agent;
-import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.model.Department;
 import com.paymentmanagement.model.Payment;
 import com.paymentmanagement.model.PaymentType;
@@ -90,12 +89,12 @@ public class ManagerMenu extends BaseMenu {
         String password = menuService.readString("Password");
         String phone = menuService.readString("Phone");
         String startDate = menuService.readString("Start date");
-
+        double salary = menuService.readDouble("Salary");
 
         try {
             Date date = new SimpleDateFormat("YYYY-mm-dd").parse(startDate);
 
-            Agent employee = new Agent(firstName, lastName, email, password, phone, date, myDep);
+            Agent employee = new Agent(firstName, lastName, email, password, phone, date, salary, myDep);
             Agent created = agentService.addEmployee(employee);
             if (created != null) {
                 menuService.showSuccess("Employee '" + created.getFirstName() + " " + created.getLastName() + "' created in department '" + myDep.getName() + "'.");
@@ -114,6 +113,7 @@ public class ManagerMenu extends BaseMenu {
     private void removeEmployee() {
         Department myDep = getMyDepartment();
         if (myDep == null) return;
+        System.out.println(myDep);
         List<Agent> employees = agentService.getEmployeesOnDepartment(myDep.getId());
         if (employees.isEmpty()) {
             menuService.showError("No employees in your department.");
@@ -169,16 +169,27 @@ public class ManagerMenu extends BaseMenu {
                 new MenuItem(3, "Bonus")
         );
         int typeChoice = menuService.displayMenuAndGetChoice("Choose payment type", paymentTypes);
-        double amount = menuService.readDouble("Amount");
-
         // Build a lightweight Agent reference to attach to Payment
         Agent selected = employees.stream().filter(a -> a.getId() == employeeId).findFirst().orElse(null);
+
+        double amount;
+        if (typeChoice == 1) {
+            amount = selected.getSalary();
+
+        } else {
+            amount = menuService.readDouble("Amount");
+        }
         if (selected == null) {
             menuService.showError("Invalid employee selection.");
             return;
         }
-        Payment payment = new Payment(selected, amount, true, new java.util.Date());
-
+        PaymentType type = typeChoice == 1 ? PaymentType.SALARY : (
+                typeChoice == 2 ? PaymentType.PRIME : (
+                        typeChoice == 3 ? PaymentType.PRIME : null
+                )
+        );
+        Payment payment = new Payment(selected, amount, true, new java.util.Date(), type);
+        System.out.println("payment: " + payment);
         try {
             switch (typeChoice) {
                 case 1:
@@ -203,6 +214,7 @@ public class ManagerMenu extends BaseMenu {
 
     private int chooseEmployee(List<Agent> employees) {
         menuService.displayHeader("-- Choose an employee --");
+        employees = employees.stream().filter(Agent::getIsActive).toList();
         List<MenuItem> items = new ArrayList<>();
         for (int i = 0; i < employees.size(); i++) {
             Agent emp = employees.get(i);
@@ -213,6 +225,7 @@ public class ManagerMenu extends BaseMenu {
             menuService.showError("Invalid selection.");
             return -1;
         }
+        System.out.println(employees.get(choice - 1));
         return employees.get(choice - 1).getId();
     }
 }

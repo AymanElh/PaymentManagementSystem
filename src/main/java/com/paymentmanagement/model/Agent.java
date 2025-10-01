@@ -9,24 +9,27 @@ public class Agent extends User {
     private AgentType agentType;
     private boolean isActive;
     private Date startDate;
+    private double salary;
     private Department department;
     private List<Payment> payments;
 
     // Constructors
 
     // Constructor for agent service
-    public Agent(String firstName, String lastName, String email, String password, String phone, Date startDate, Department department) {
+    public Agent(String firstName, String lastName, String email, String password, String phone, Date startDate, double salary, Department department) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
         this.department = department;
+        this.salary = salary;
         this.startDate = startDate;
     }
 
-    public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department) {
+    public Agent(String firstName, String lastName, String email, String password, String phone, double salary, AgentType agentType, Department department) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
         this.agentType = agentType;
         this.department = department;
+        this.salary = salary;
     }
 
     public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department, List<Payment> payments) {
@@ -115,6 +118,14 @@ public class Agent extends User {
         this.id = id;
     }
 
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
     public int generateAgentId() {
         int baseId = (int) (System.currentTimeMillis() % 100000);
         int typeMultiplier = agentType == AgentType.MANAGER ? 1000 : 100;
@@ -137,7 +148,8 @@ public class Agent extends User {
                         \t Phone: %s 
                         \t Department: %s 
                         \t Type: %s  
+                        \t Salary: %.2f
                         """,
-                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name());
+                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name(), getSalary());
     }
 }
