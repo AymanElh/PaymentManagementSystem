@@ -7,6 +7,7 @@ import com.paymentmanagement.service.AuthService;
 import com.paymentmanagement.service.DepartmentService;
 import com.paymentmanagement.service.PaymentService;
 import com.paymentmanagement.view.menu.DirectorMenu;
+import com.paymentmanagement.view.menu.EmployeeMenu;
 import com.paymentmanagement.view.menu.ManagerMenu;
 
 import java.util.Arrays;
@@ -77,7 +78,8 @@ public class ConsoleView extends BaseMenu {
                     ManagerMenu managerMenu = new ManagerMenu(authService, menuService, scanner, agentService, paymentService);
                     managerMenu.show();
                 } else if(currentUserType == AgentType.EMPLOYEE) {
-
+                    EmployeeMenu employeeMenu = new EmployeeMenu(authService, menuService, scanner, agentService, paymentService);
+                    employeeMenu.show();
                 }
             }
         } catch (Exception e) {

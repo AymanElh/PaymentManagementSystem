@@ -172,13 +172,16 @@ public class ManagerMenu extends BaseMenu {
         // Build a lightweight Agent reference to attach to Payment
         Agent selected = employees.stream().filter(a -> a.getId() == employeeId).findFirst().orElse(null);
 
-        double amount;
+        double amount = 0.0;
         if (typeChoice == 1) {
             amount = selected.getSalary();
 
-        } else {
+        } else if(typeChoice == 2) {
             amount = menuService.readDouble("Amount");
+            if (amount > selected.getSalary()) return;
         }
+
+
         if (selected == null) {
             menuService.showError("Invalid employee selection.");
             return;
