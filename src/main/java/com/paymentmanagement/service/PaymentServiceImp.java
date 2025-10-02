@@ -4,6 +4,8 @@ import com.paymentmanagement.model.Payment;
 import com.paymentmanagement.model.PaymentType;
 import com.paymentmanagement.repository.PaymentRepository;
 
+import java.util.List;
+
 public class PaymentServiceImp implements PaymentService{
     private final PaymentRepository paymentRepository;
 
@@ -34,5 +36,10 @@ public class PaymentServiceImp implements PaymentService{
     public Payment addPrimeToAgent(Payment payment) {
         payment.setPaymentType(PaymentType.PRIME);
         return paymentRepository.makePayment(payment);
+    }
+
+    @Override
+    public List<Payment> getPaymentByAgent(int agentId) {
+        return paymentRepository.getPaymentsByAgent(agentId);
     }
 }
