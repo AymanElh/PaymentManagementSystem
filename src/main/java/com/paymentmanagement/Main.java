@@ -42,7 +42,7 @@ public class Main {
         PaymentService paymentService = new PaymentServiceImp(paymentRepository);
         AuthService authService = new AuthServiceImp(agentRepository, null);
         MenuService menuService = new MenuService(scanner);
-        StatisticsService statisticsService = new StatisticsServiceImp(paymentRepository);
+        StatisticsService statisticsService = new StatisticsServiceImp(paymentRepository, agentRepository, departmentRepository);
 
         ConsoleView view = new ConsoleView(authService, menuService, scanner, agentService, authService, paymentService, departmentService, statisticsService);
         view.show();

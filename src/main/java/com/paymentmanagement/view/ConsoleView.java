@@ -70,7 +70,7 @@ public class ConsoleView extends BaseMenu {
 
                 AgentType currentUserType = currentUser.getCurrentLoggedAgent().getAgentType();
                 if(currentUserType == AgentType.DIRECTOR) {
-                    DirectorMenu directorMenu = new DirectorMenu(authService, menuService, scanner, agentService, departmentService);
+                    DirectorMenu directorMenu = new DirectorMenu(authService, menuService, scanner, agentService, departmentService, statisticsService);
                     directorMenu.show();
                 } else if(currentUserType == AgentType.MANAGER) {
                     ManagerMenu managerMenu = new ManagerMenu(authService, menuService, scanner, agentService, paymentService, statisticsService);

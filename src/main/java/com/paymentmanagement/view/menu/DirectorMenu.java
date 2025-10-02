@@ -2,9 +2,11 @@ package com.paymentmanagement.view.menu;
 
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.Department;
+import com.paymentmanagement.model.PaymentType;
 import com.paymentmanagement.service.AgentService;
 import com.paymentmanagement.service.AuthService;
 import com.paymentmanagement.service.DepartmentService;
+import com.paymentmanagement.service.StatisticsService;
 import com.paymentmanagement.view.BaseMenu;
 import com.paymentmanagement.view.MenuItem;
 import com.paymentmanagement.view.MenuService;
@@ -16,10 +18,12 @@ import java.util.*;
 public class DirectorMenu extends BaseMenu {
     private final DepartmentService departmentService;
     private final AgentService agentService;
-    public DirectorMenu(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, DepartmentService departmentService) {
+    private final StatisticsService statisticsService;
+    public DirectorMenu(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, DepartmentService departmentService, StatisticsService statisticsService) {
         super(authService, menuService, scanner);
         this.agentService = agentService;
         this.departmentService = departmentService;
+        this.statisticsService = statisticsService;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class DirectorMenu extends BaseMenu {
                 new MenuItem(4, "Create manager"),
                 new MenuItem(5, "Update manager"),
                 new MenuItem(6, "View all managers"),
-                new MenuItem(0, "Exit")
+                new MenuItem(7, "Distribution of payments per type")
         );
     }
 
@@ -65,6 +69,9 @@ public class DirectorMenu extends BaseMenu {
                 //
             case 6:
                 //
+            case 7:
+                getDistributionByPaymentType();
+                break;
             default:
                 menuService.showSuccess("Invalid choice try again");
         }
@@ -152,6 +159,14 @@ public class DirectorMenu extends BaseMenu {
         List<Department> departments = departmentService.getAllDepartments();
         for(Department department: departments) {
             System.out.println(department);
+        }
+    }
+
+    private void getDistributionByPaymentType() {
+        Map<PaymentType, Double> paymentDistribution = statisticsService.distibutionOfPaymentByType();
+        System.out.println(paymentDistribution);
+        for(PaymentType type: paymentDistribution.keySet()) {
+            System.out.println(type.name() + ": " + paymentDistribution.get(type) + "%");
         }
     }
 }

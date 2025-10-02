@@ -1,5 +1,8 @@
 package com.paymentmanagement.service;
 
+import com.paymentmanagement.model.PaymentType;
+import com.paymentmanagement.repository.AgentRepository;
+import com.paymentmanagement.repository.DepartmentRepository;
 import com.paymentmanagement.repository.PaymentRepository;
 import com.paymentmanagement.model.Payment;
 import com.paymentmanagement.model.Agent;
@@ -10,9 +13,13 @@ import java.util.stream.Collectors;
 
 public class StatisticsServiceImp implements StatisticsService {
     private final PaymentRepository paymentRepository;
+    private final AgentRepository agentRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public StatisticsServiceImp(PaymentRepository paymentRepository) {
+    public StatisticsServiceImp(PaymentRepository paymentRepository, AgentRepository agentRepository, DepartmentRepository departmentRepository) {
         this.paymentRepository = paymentRepository;
+        this.agentRepository = agentRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -50,4 +57,27 @@ public class StatisticsServiceImp implements StatisticsService {
             .collect(Collectors.toList());
     }
 
+    @Override
+    public int nbrTotalOfAgent() {
+        return agentRepository.getAllAgents().size();
+    }
+
+    @Override
+    public int nbrTotalOfDepartments() {
+        return departmentRepository.getAllDepartments().size();
+    }
+
+    @Override
+    public Map<PaymentType, Double> distibutionOfPaymentByType() {
+        List<Payment> payments = paymentRepository.getAllPayments();
+        Map<PaymentType, Long> countByType = payments.stream()
+                .collect(Collectors.groupingBy(Payment::getPaymentType, Collectors.counting()));
+
+        System.out.println(countByType);
+        int total = payments.size();
+
+        return countByType.entrySet()
+                .stream()
+                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> (entry.getValue() * 100.0) / total));
+    }
 }
