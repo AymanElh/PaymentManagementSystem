@@ -1,9 +1,10 @@
 package com.paymentmanagement.model;
 
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 
-public class Payment {
+public class Payment implements Comparable<Payment> {
     private int id;
     private PaymentType paymentType;
     private double amount;
@@ -29,6 +30,10 @@ public class Payment {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Agent getAgent() {
@@ -76,10 +81,15 @@ public class Payment {
     }
 
     @Override
+    public int compareTo(Payment o) {
+        return Double.compare(this.amount, o.amount);
+    }
+
+    @Override
     public String toString() {
         return "Payment{" +
                 "id=" + id +
-                ", agent=" + agent +
+                ", agent name=" + agent.getFirstName() + agent.getLastName() +
                 ", paymentType=" + paymentType +
                 ", amount=" + amount +
                 ", payment_date=" + paymentDate +

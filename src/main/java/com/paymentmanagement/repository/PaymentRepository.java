@@ -3,6 +3,7 @@ package com.paymentmanagement.repository;
 import com.paymentmanagement.dao.PaymentDAOImp;
 import com.paymentmanagement.model.Payment;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,10 @@ public class PaymentRepository {
         return paymentDAO.save(payment);
     }
 
+    public Payment getPaymentById(int paymentId) {
+        return paymentDAO.findById(paymentId);
+    }
+
     public List<Payment> getPaymentsByAgent(int agentId) {
         return paymentDAO.findAll()
                 .stream()
@@ -27,7 +32,7 @@ public class PaymentRepository {
     public List<Payment> sortPaymentsAscByAgent(int agentId) {
         return getPaymentsByAgent(agentId)
                 .stream()
-                .sorted()
+                .sorted(Comparator.comparing(Payment::getAmount).reversed())
                 .toList();
     }
 
