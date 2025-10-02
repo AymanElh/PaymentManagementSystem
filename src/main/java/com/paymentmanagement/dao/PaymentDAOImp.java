@@ -1,7 +1,7 @@
 package com.paymentmanagement.dao;
 
 import com.paymentmanagement.config.DatabaseConnection;
-import com.paymentmanagement.model.Payment;
+import com.paymentmanagement.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,7 +80,7 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
         String query = """
             SELECT p.id, p.type, p.amount, p.payment_date, p.condition_validation,
                    a.id as agent_id, u.id as user_id, u.first_name, u.last_name,
-                   u.email, u.password, u.phone, a.type as agent_type, a.start_date, a.is_active,
+                   u.email, u.password, u.phone, a.type as agent_type, a.start_date, a.salary, a.is_active,
                    d.id as department_id, d.name as department_name, d.description as department_description
             FROM payments p
             JOIN agents a ON p.agent_id = a.id
@@ -110,7 +110,7 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
         String query = """
             SELECT p.id, p.type, p.amount, p.payment_date, p.condition_validation,
                    a.id as agent_id, u.id as user_id, u.first_name, u.last_name,
-                   u.email, u.password, u.phone, a.type as agent_type, a.start_date, a.is_active,
+                   u.email, u.password, u.phone, a.type as agent_type, a.salary, a.start_date, a.is_active,
                    d.id as department_id, d.name as department_name, d.description as department_description
             FROM payments p
             JOIN agents a ON p.agent_id = a.id
@@ -174,10 +174,10 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
         if (departmentId != null && departmentId > 0) {
             String departmentName = rs.getString("department_name");
             String departmentDescription = rs.getString("department_description");
-            department = new com.paymentmanagement.model.Department(departmentId, departmentName, departmentDescription);
+            department = new Department(departmentId, departmentName, departmentDescription);
         }
 
-        com.paymentmanagement.model.Agent agent = new com.paymentmanagement.model.Agent(
+        Agent agent = new Agent(
             rs.getInt("user_id"),
             rs.getInt("agent_id"),
             rs.getString("first_name"),
@@ -185,9 +185,10 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
             rs.getString("email"),
             rs.getString("password"),
             rs.getString("phone"),
-            com.paymentmanagement.model.AgentType.valueOf(rs.getString("agent_type").toUpperCase()),
+            AgentType.valueOf(rs.getString("agent_type").toUpperCase()),
             rs.getBoolean("is_active"),
             rs.getDate("start_date"),
+            rs.getDouble("salary"),
             department
         );
 
@@ -196,7 +197,7 @@ public class PaymentDAOImp implements GenericDAO<Payment>{
             rs.getDouble("amount"),
             rs.getBoolean("condition_validation"),
             rs.getDate("payment_date"),
-            com.paymentmanagement.model.PaymentType.valueOf(rs.getString("type"))
+            PaymentType.valueOf(rs.getString("type"))
         );
         payment.setId(rs.getInt("id"));
 

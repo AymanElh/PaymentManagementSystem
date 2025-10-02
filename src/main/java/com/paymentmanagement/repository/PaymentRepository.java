@@ -14,6 +14,10 @@ public class PaymentRepository {
         this.paymentDAO = paymentDAO;
     }
 
+    public List<Payment> getAllPayments() {
+        return paymentDAO.findAll();
+    }
+
     public Payment makePayment(Payment payment) {
         return paymentDAO.save(payment);
     }
@@ -27,6 +31,22 @@ public class PaymentRepository {
                 .stream()
                 .filter(payment -> payment.getAgent().getId() == agentId)
                 .collect(Collectors.toList());
+    }
+
+    public List<Payment> getPaymentByDepartment(int departmentId) {
+        return paymentDAO.findAll()
+                .stream()
+                .filter(payment -> payment.getAgent().getDepartment().getId() == departmentId)
+                .collect(Collectors.toList());
+    }
+
+    public double getAveragePaymentOfDepartment(int departmentId) {
+        return paymentDAO.findAll()
+                .stream()
+                .filter(payment -> payment.getAgent().getDepartment().getId() == departmentId)
+                .mapToDouble(Payment::getAmount)
+                .average()
+                .orElse(0.00);
     }
 
     public List<Payment> sortPaymentsAscByAgent(int agentId) {

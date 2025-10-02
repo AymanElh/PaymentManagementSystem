@@ -2,10 +2,7 @@ package com.paymentmanagement.view;
 
 import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.model.LoginSession;
-import com.paymentmanagement.service.AgentService;
-import com.paymentmanagement.service.AuthService;
-import com.paymentmanagement.service.DepartmentService;
-import com.paymentmanagement.service.PaymentService;
+import com.paymentmanagement.service.*;
 import com.paymentmanagement.view.menu.DirectorMenu;
 import com.paymentmanagement.view.menu.EmployeeMenu;
 import com.paymentmanagement.view.menu.ManagerMenu;
@@ -19,14 +16,15 @@ public class ConsoleView extends BaseMenu {
     private final AgentService agentService;
     private final PaymentService paymentService;
     private final DepartmentService departmentService;
+    private final StatisticsService statisticsService;
 
-
-    public ConsoleView(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, AuthService authService1, PaymentService paymentService, DepartmentService departmentService) {
+    public ConsoleView(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, AuthService authService1, PaymentService paymentService, DepartmentService departmentService, StatisticsService statisticsService) {
         super(authService, menuService, scanner);
         this.agentService = agentService;
         this.authService = authService1;
         this.paymentService = paymentService;
         this.departmentService = departmentService;
+        this.statisticsService = statisticsService;
     }
 
 
@@ -75,10 +73,10 @@ public class ConsoleView extends BaseMenu {
                     DirectorMenu directorMenu = new DirectorMenu(authService, menuService, scanner, agentService, departmentService);
                     directorMenu.show();
                 } else if(currentUserType == AgentType.MANAGER) {
-                    ManagerMenu managerMenu = new ManagerMenu(authService, menuService, scanner, agentService, paymentService);
+                    ManagerMenu managerMenu = new ManagerMenu(authService, menuService, scanner, agentService, paymentService, statisticsService);
                     managerMenu.show();
                 } else if(currentUserType == AgentType.EMPLOYEE) {
-                    EmployeeMenu employeeMenu = new EmployeeMenu(authService, menuService, scanner, agentService, paymentService);
+                    EmployeeMenu employeeMenu = new EmployeeMenu(authService, menuService, scanner, paymentService);
                     employeeMenu.show();
                 }
             }

@@ -50,13 +50,14 @@ public class Agent extends User {
     }
 
     public Agent(int userId, int agentId, String firstName, String lastName, String email, String password, String phone,
-                 AgentType agentType, boolean isActive, Date startDate, Department department) {
+                 AgentType agentType, boolean isActive, Date startDate, double salary, Department department) {
         super(userId, firstName, lastName, email, password, phone);
         this.id = agentId;
         this.agentType = agentType;
         this.isActive = isActive;
         this.startDate = startDate;
         this.department = department;
+        this.salary = salary;
     }
 
 
@@ -151,5 +152,13 @@ public class Agent extends User {
                         \t Salary: %.2f
                         """,
                 getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name(), getSalary());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this) return true;
+        if(!(obj instanceof Agent)) return false;
+        Agent agent = (Agent) obj;
+        return id == agent.id;
     }
 }

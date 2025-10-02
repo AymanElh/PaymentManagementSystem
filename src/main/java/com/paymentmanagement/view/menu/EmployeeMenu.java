@@ -13,12 +13,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class EmployeeMenu extends BaseMenu {
-    private final AgentService agentService;
     private final PaymentService paymentService;
 
-    public EmployeeMenu(AuthService authService, MenuService menuService, Scanner scanner, AgentService agentService, PaymentService paymentService) {
+    public EmployeeMenu(AuthService authService, MenuService menuService, Scanner scanner, PaymentService paymentService) {
         super(authService, menuService, scanner);
-        this.agentService = agentService;
         this.paymentService = paymentService;
     }
 
