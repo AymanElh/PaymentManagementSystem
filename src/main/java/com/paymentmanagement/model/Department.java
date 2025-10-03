@@ -11,6 +11,12 @@ public class Department {
         this.description = description;
     }
 
+    public Department(String name, String description) {
+        this.name = name;
+        this.description = description;
+        this.id = generateSimpleId();
+    }
+
     public String getDescription() {
         return description;
     }
@@ -35,5 +41,18 @@ public class Department {
         this.name = name;
     }
 
+    public int generateSimpleId() {
+        System.out.println(this.name.hashCode());
+        return Math.abs(this.name.hashCode()) % 10000;
+    }
 
+
+    @Override
+    public String toString() {
+        return "Department{" +
+                ", id=" + id +
+                "description='" + description + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

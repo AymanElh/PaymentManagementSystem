@@ -9,23 +9,27 @@ public class Agent extends User {
     private AgentType agentType;
     private boolean isActive;
     private Date startDate;
+    private double salary;
     private Department department;
     private List<Payment> payments;
 
     // Constructors
 
     // Constructor for agent service
-    public Agent(String firstName, String lastName, String email, String password, String phone, Department department) {
+    public Agent(String firstName, String lastName, String email, String password, String phone, Date startDate, double salary, Department department) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
         this.department = department;
+        this.salary = salary;
+        this.startDate = startDate;
     }
 
-    public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department) {
+    public Agent(String firstName, String lastName, String email, String password, String phone, double salary, AgentType agentType, Department department) {
         super(firstName, lastName, email, password, phone);
         this.id = generateAgentId();
         this.agentType = agentType;
         this.department = department;
+        this.salary = salary;
     }
 
     public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department, List<Payment> payments) {
@@ -46,13 +50,14 @@ public class Agent extends User {
     }
 
     public Agent(int userId, int agentId, String firstName, String lastName, String email, String password, String phone,
-                 AgentType agentType, boolean isActive, Date startDate, Department department) {
+                 AgentType agentType, boolean isActive, Date startDate, double salary, Department department) {
         super(userId, firstName, lastName, email, password, phone);
         this.id = agentId;
         this.agentType = agentType;
         this.isActive = isActive;
         this.startDate = startDate;
         this.department = department;
+        this.salary = salary;
     }
 
 
@@ -114,6 +119,14 @@ public class Agent extends User {
         this.id = id;
     }
 
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
     public int generateAgentId() {
         int baseId = (int) (System.currentTimeMillis() % 100000);
         int typeMultiplier = agentType == AgentType.MANAGER ? 1000 : 100;
@@ -125,6 +138,7 @@ public class Agent extends User {
 
     @Override
     public String toString() {
+        String departmentName = (department != null) ? department.getName() : "No Department";
 
         return String.format("""
                         -- Agent info -- 
@@ -135,8 +149,16 @@ public class Agent extends User {
                         \t Phone: %s 
                         \t Department: %s 
                         \t Type: %s  
-                        \t Start date %s 
+                        \t Salary: %.2f
                         """,
-                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), department.getName(), getAgentType().name(), getStartDateAsString());
+                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name(), getSalary());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this) return true;
+        if(!(obj instanceof Agent)) return false;
+        Agent agent = (Agent) obj;
+        return id == agent.id;
     }
 }

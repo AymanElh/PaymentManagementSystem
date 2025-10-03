@@ -1,13 +1,21 @@
 package com.paymentmanagement.model;
 
 public class LoginSession {
-    private Agent currentAgent;
+    private Agent currentLoggedAgent;
 
-    public LoginSession(Agent currentAgent) {
-        this.currentAgent = currentAgent;
+    public LoginSession(Agent currentLoggedAgent) {
+        this.currentLoggedAgent = currentLoggedAgent;
+    }
+
+    public Agent getCurrentLoggedAgent() {
+        return currentLoggedAgent;
+    }
+
+    public void setCurrentLoggedAgent(Agent currentLoggedAgent) {
+        this.currentLoggedAgent = currentLoggedAgent;
     }
 
     public String getUserName() {
-        return currentAgent.getFirstName() + " " + currentAgent.getLastName();
+        return  currentLoggedAgent.getFirstName() + " " + currentLoggedAgent.getLastName();
     }
 }

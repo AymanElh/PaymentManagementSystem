@@ -51,7 +51,6 @@ public class DatabaseConnection {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("Database connected successfully");
     }
 
     public Connection getConnection() {

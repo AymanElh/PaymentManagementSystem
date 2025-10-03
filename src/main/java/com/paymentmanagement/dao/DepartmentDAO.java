@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,10 @@ public class DepartmentDAO implements GenericDAO<Department>{
             }
 
             return department;
+        } catch (SQLIntegrityConstraintViolationException dup) {
+            // Unique constraint violation (e.g., duplicate department name)
+            System.err.println("Department already exists: " + department.getName());
+            return null; // signal duplicate to upper layers instead of crashing
         } catch (SQLException e) {
             System.err.println("Database error while saving department: " + e.getMessage());
             throw new RuntimeException(e);
@@ -97,6 +102,21 @@ public class DepartmentDAO implements GenericDAO<Department>{
             return null;
         } catch (SQLException e) {
             System.err.println("Database error while getting department by id: " + e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Department findByName(String name) {
+        try(Connection conn = dbConnection.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM departments WHERE name = ?");
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return convertResultIntoDepartment(rs);
+            }
+            return null;
+        } catch (SQLException e) {
+            System.err.println("Database error while getting department by name: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

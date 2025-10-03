@@ -58,6 +58,10 @@ public class AgentRepository {
                 .collect(Collectors.toList());
     }
 
+    public List<Agent> getAllAgents() {
+        return agentDAO.findAll();
+    }
+
     public List<Agent> getAllManagers() {
         return agentDAO.findAll()
                 .stream()
