@@ -11,6 +11,7 @@ import com.paymentmanagement.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class AgentServiceImp implements AgentService {
     private final AgentRepository agentRepository;
@@ -38,9 +39,20 @@ public class AgentServiceImp implements AgentService {
         return agentRepository.createAgent(manager);
     }
 
+    @Override
+    public Agent updateDepartmentManager(Agent newManager, int departmentId) {
+        Agent departmentManager = getDepartmentManager(departmentId).orElse(null);
+        if(departmentManager != null) {
+            departmentManager.setAgentType(AgentType.EMPLOYEE);
+            agentRepository.updateAgent(departmentManager);
+        }
+        newManager.setAgentType(AgentType.MANAGER);
+        agentRepository.updateAgent(newManager);
+        return newManager;
+    }
 
     @Override
-    public Agent desactivateAgent(int agentId) throws Exception {
+    public Agent desactivateAgent(int agentId) throws EntityNotFoundException {
         Agent agent = agentRepository.getAgentById(agentId);
         if (agent == null) {
             throw new EntityNotFoundException("Agent", agentId);
@@ -58,5 +70,13 @@ public class AgentServiceImp implements AgentService {
     @Override
     public Optional<Agent> getDepartmentManager(int departmentId) {
         return agentRepository.getDepartmentManager(departmentId);
+    }
+
+    @Override
+    public List<Agent> getAllManagers() {
+        return agentRepository.getAllAgents()
+                .stream()
+                .filter(agent ->  agent.getAgentType() == AgentType.MANAGER)
+                .collect(Collectors.toList());
     }
 }

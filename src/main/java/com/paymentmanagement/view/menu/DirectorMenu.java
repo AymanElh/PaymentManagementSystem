@@ -35,7 +35,8 @@ public class DirectorMenu extends BaseMenu {
                 new MenuItem(4, "Create manager"),
                 new MenuItem(5, "Update manager"),
                 new MenuItem(6, "View all managers"),
-                new MenuItem(7, "Distribution of payments per type")
+                new MenuItem(7, "Distribution of payments per type"),
+                new MenuItem(8, "Update department manager")
         );
     }
 
@@ -68,9 +69,13 @@ public class DirectorMenu extends BaseMenu {
             case 5:
                 //
             case 6:
-                //
+                getAllManagers();
+                break;
             case 7:
                 getDistributionByPaymentType();
+                break;
+            case 8:
+                updateDepartmentManager();
                 break;
             default:
                 menuService.showSuccess("Invalid choice try again");
@@ -160,6 +165,45 @@ public class DirectorMenu extends BaseMenu {
         for(Department department: departments) {
             System.out.println(department);
         }
+    }
+
+    private void updateDepartmentManager() {
+        menuService.displayTitle("Choose the department");
+        Department department = chooseDepartmentForManager();
+
+        List<Agent> agentsOnThisDep = agentService.getEmployeesOnDepartment(department.getId());
+        List<MenuItem> menuItems = new ArrayList<>();
+        for(int i = 0; i < agentsOnThisDep.size(); i++) {
+            menuItems.add(new MenuItem(i+1, agentsOnThisDep.get(i).getFirstName() + " | " + agentsOnThisDep.get(i).getLastName()));
+        }
+
+        int choice = menuService.displayMenuAndGetChoice("Choose the employee to be the new manager", menuItems);
+
+        Agent manager = agentService.updateDepartmentManager(agentsOnThisDep.get(choice - 1), department.getId());
+        System.out.println("Manager updated successfully, new manager:  \n6" + manager);
+    }
+
+    private void getAllManagers() {
+        List<Agent> agents = agentService.getAllManagers();
+
+        if (agents.isEmpty()) {
+            menuService.showError("No managers found.");
+            return;
+        }
+
+        menuService.displayHeader("All Managers");
+        System.out.printf("%-5s %-15s %-15s %-20s%n", "ID", "First Name", "Last Name", "Department");
+        System.out.println("─".repeat(60));
+
+        for (Agent agent : agents) {
+            String departmentName = (agent.getDepartment() != null) ? agent.getDepartment().getName() : "No Department";
+            System.out.printf("%-5d %-15s %-15s %-20s%n",
+                agent.getId(),
+                agent.getFirstName(),
+                agent.getLastName(),
+                departmentName);
+        }
+        System.out.println();
     }
 
     private void getDistributionByPaymentType() {
