@@ -1,30 +1,18 @@
 package com.paymentmanagement;
 
 import com.paymentmanagement.config.DatabaseConnection;
-
 import com.paymentmanagement.dao.*;
-
-import com.paymentmanagement.model.Agent;
-import com.paymentmanagement.model.AgentType;
-import com.paymentmanagement.model.Department;
 import com.paymentmanagement.repository.AgentRepository;
-
 import com.paymentmanagement.repository.*;
 import com.paymentmanagement.service.*;
 import com.paymentmanagement.view.ConsoleView;
 import com.paymentmanagement.view.MenuService;
-
-
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         DatabaseConnection dbConnection = DatabaseConnection.getInstance();
         Scanner scanner = new Scanner(System.in);
 
@@ -49,7 +37,6 @@ public class Main {
 
         ConsoleView view = new ConsoleView(authService, menuService, scanner, agentService, authService, paymentService, departmentService, statisticsService);
         view.show();
-
 
     }
 }

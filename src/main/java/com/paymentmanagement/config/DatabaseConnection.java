@@ -49,6 +49,7 @@ public class DatabaseConnection {
         try {
             this.connection = DriverManager.getConnection(this.url, this.username, this.password);
         } catch (SQLException e) {
+            System.out.println("Error on driver: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

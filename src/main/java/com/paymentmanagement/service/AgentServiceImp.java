@@ -5,6 +5,7 @@ import com.paymentmanagement.exception.ValidationException;
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.repository.AgentRepository;
+import com.paymentmanagement.util.PasswordUtils;
 import com.paymentmanagement.validation.AgentValidator;
 import com.paymentmanagement.validation.Validator;
 
@@ -24,6 +25,8 @@ public class AgentServiceImp implements AgentService {
     public Agent addEmployee(Agent agent) throws ValidationException {
         agentValidator.validate(agent);
         agent.setAgentType(AgentType.EMPLOYEE);
+        agent.setPassword(PasswordUtils.hashPassword(agent.getPassword()));
+        System.out.println(agent);
         return agentRepository.createAgent(agent);
     }
 
@@ -31,6 +34,7 @@ public class AgentServiceImp implements AgentService {
     public Agent addManager(Agent manager) throws ValidationException {
         agentValidator.validate(manager);
         manager.setAgentType(AgentType.MANAGER);
+        manager.setPassword(PasswordUtils.hashPassword(manager.getPassword()));
         return agentRepository.createAgent(manager);
     }
 
