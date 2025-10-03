@@ -1,41 +1,35 @@
 package com.paymentmanagement.service;
 
+import com.paymentmanagement.exception.EntityNotFoundException;
+import com.paymentmanagement.exception.ValidationException;
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.repository.AgentRepository;
+import com.paymentmanagement.validation.AgentValidator;
+import com.paymentmanagement.validation.Validator;
 
 import java.util.List;
 import java.util.Optional;
 
-public class AgentServiceImp implements AgentService  {
+public class AgentServiceImp implements AgentService {
     private final AgentRepository agentRepository;
+    private final Validator<Agent> agentValidator;
 
     public AgentServiceImp(AgentRepository agentRepository) {
         this.agentRepository = agentRepository;
+        this.agentValidator = new AgentValidator();
     }
 
     @Override
-    public Agent addEmployee(Agent agent) throws Exception {
-        if(!agent.getEmail().contains("@")) {
-            throw new Exception("Email not valid");
-        }
-
-        if(agent.getPassword().length() < 6) {
-            throw new Exception("Password invalid");
-        }
+    public Agent addEmployee(Agent agent) throws ValidationException {
+        agentValidator.validate(agent);
         agent.setAgentType(AgentType.EMPLOYEE);
         return agentRepository.createAgent(agent);
     }
 
     @Override
-    public Agent addManager(Agent manager) throws Exception {
-        if(!manager.getEmail().contains("@")) {
-            throw new Exception("Email not valid");
-        }
-
-        if(manager.getPassword().length() < 6) {
-            throw new Exception("Password invalid");
-        }
+    public Agent addManager(Agent manager) throws ValidationException {
+        agentValidator.validate(manager);
         manager.setAgentType(AgentType.MANAGER);
         return agentRepository.createAgent(manager);
     }
@@ -44,8 +38,8 @@ public class AgentServiceImp implements AgentService  {
     @Override
     public Agent desactivateAgent(int agentId) throws Exception {
         Agent agent = agentRepository.getAgentById(agentId);
-        if(agent == null) {
-            throw new Exception("Agent not found");
+        if (agent == null) {
+            throw new EntityNotFoundException("Agent", agentId);
         }
 
         agent.setActive(false);

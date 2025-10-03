@@ -1,8 +1,11 @@
 package com.paymentmanagement.service;
 
+import com.paymentmanagement.exception.ValidationException;
 import com.paymentmanagement.model.Payment;
 import com.paymentmanagement.model.PaymentType;
 import com.paymentmanagement.repository.PaymentRepository;
+import com.paymentmanagement.validation.PaymentValidator;
+import com.paymentmanagement.validation.Validator;
 
 import java.util.Comparator;
 import java.util.List;
@@ -10,21 +13,17 @@ import java.util.stream.Collectors;
 
 public class PaymentServiceImp implements PaymentService{
     private final PaymentRepository paymentRepository;
+    private Validator<Payment> paymentValidator;
 
     public PaymentServiceImp(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
+        this.paymentValidator = new PaymentValidator();
     }
 
     @Override
-    public Payment addSalaryToAgent(Payment payment) throws Exception {
-        if(payment.getAmount() < 0) {
-            throw new Exception("Amount not valid");
-        }
-
-        if(payment.getAgent() == null) {
-            throw new Exception("Agent cannot be null");
-        }
+    public Payment addSalaryToAgent(Payment payment) throws ValidationException {
         payment.setPaymentType(PaymentType.SALARY);
+        paymentValidator.validate(payment);
         return paymentRepository.makePayment(payment);
     }
 
