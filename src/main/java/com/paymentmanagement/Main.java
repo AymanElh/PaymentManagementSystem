@@ -1,16 +1,19 @@
 package com.paymentmanagement;
 
 import com.paymentmanagement.config.DatabaseConnection;
+
 import com.paymentmanagement.dao.*;
+
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.AgentType;
 import com.paymentmanagement.model.Department;
 import com.paymentmanagement.repository.AgentRepository;
-import com.paymentmanagement.repository.DepartmentRepository;
-import com.paymentmanagement.repository.PaymentRepository;
+
+import com.paymentmanagement.repository.*;
 import com.paymentmanagement.service.*;
 import com.paymentmanagement.view.ConsoleView;
 import com.paymentmanagement.view.MenuService;
+
 
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -46,6 +49,7 @@ public class Main {
 
         ConsoleView view = new ConsoleView(authService, menuService, scanner, agentService, authService, paymentService, departmentService, statisticsService);
         view.show();
+
 
     }
 }
