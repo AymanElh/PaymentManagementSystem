@@ -1,0 +1,164 @@
+package com.paymentmanagement.model;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+public class Agent extends User {
+    private int id;
+    private AgentType agentType;
+    private boolean isActive;
+    private Date startDate;
+    private double salary;
+    private Department department;
+    private List<Payment> payments;
+
+    // Constructors
+
+    // Constructor for agent service
+    public Agent(String firstName, String lastName, String email, String password, String phone, Date startDate, double salary, Department department) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.department = department;
+        this.salary = salary;
+        this.startDate = startDate;
+    }
+
+    public Agent(String firstName, String lastName, String email, String password, String phone, double salary, AgentType agentType, Department department) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.agentType = agentType;
+        this.department = department;
+        this.salary = salary;
+    }
+
+    public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, Department department, List<Payment> payments) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.agentType = agentType;
+        this.department = department;
+        this.payments = payments;
+    }
+
+    // Constructor for creating new agents (generates IDs)
+    public Agent(String firstName, String lastName, String email, String password, String phone, AgentType agentType, boolean isActive, Date startDate) {
+        super(firstName, lastName, email, password, phone);
+        this.id = generateAgentId();
+        this.agentType = agentType;
+        this.isActive = isActive;
+        this.startDate = startDate;
+    }
+
+    public Agent(int userId, int agentId, String firstName, String lastName, String email, String password, String phone,
+                 AgentType agentType, boolean isActive, Date startDate, double salary, Department department) {
+        super(userId, firstName, lastName, email, password, phone);
+        this.id = agentId;
+        this.agentType = agentType;
+        this.isActive = isActive;
+        this.startDate = startDate;
+        this.department = department;
+        this.salary = salary;
+    }
+
+
+    // Getters and setters
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
+    }
+
+    public AgentType getAgentType() {
+        return agentType;
+    }
+
+    public void setAgentType(AgentType agentType) {
+        this.agentType = agentType;
+    }
+
+    public boolean getIsActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public String getStartDateAsString() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("YYYY-MM-dd");
+        return simpleDateFormat.format(startDate);
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public int getUserId() {
+        return super.getId();
+    }
+    public void setUserId(int id) {
+        super.setId(id);
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
+    }
+
+    public int generateAgentId() {
+        int baseId = (int) (System.currentTimeMillis() % 100000);
+        int typeMultiplier = agentType == AgentType.MANAGER ? 1000 : 100;
+        return baseId + typeMultiplier;
+    }
+
+
+    // Override methods
+
+    @Override
+    public String toString() {
+        String departmentName = (department != null) ? department.getName() : "No Department";
+
+        return String.format("""
+                        -- Agent info -- 
+                        \t Id: %d 
+                        \t First Name: %s 
+                        \t LastName: %s 
+                        \t Email: %s 
+                        \t Phone: %s 
+                        \t Department: %s 
+                        \t Type: %s  
+                        \t Salary: %.2f
+                        """,
+                getId(), getFirstName(), getLastName(), getEmail(), getPhone(), departmentName, getAgentType().name(), getSalary());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == this) return true;
+        if(!(obj instanceof Agent)) return false;
+        Agent agent = (Agent) obj;
+        return id == agent.id;
+    }
+}
