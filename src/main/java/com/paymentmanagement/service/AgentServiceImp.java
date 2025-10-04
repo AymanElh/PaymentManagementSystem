@@ -27,7 +27,6 @@ public class AgentServiceImp implements AgentService {
         agentValidator.validate(agent);
         agent.setAgentType(AgentType.EMPLOYEE);
         agent.setPassword(PasswordUtils.hashPassword(agent.getPassword()));
-        System.out.println(agent);
         return agentRepository.createAgent(agent);
     }
 

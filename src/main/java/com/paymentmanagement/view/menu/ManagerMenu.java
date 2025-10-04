@@ -102,7 +102,7 @@ public class ManagerMenu extends BaseMenu {
         String email = menuService.readString("Email");
         String password = menuService.readString("Password");
         String phone = menuService.readString("Phone");
-        String startDate = menuService.readString("Start date");
+        String startDate = menuService.readString("Start date (YYYY-MM-DD)");
         double salary = menuService.readDouble("Salary");
 
         try {
@@ -127,7 +127,6 @@ public class ManagerMenu extends BaseMenu {
     private void removeEmployee() {
         Department myDep = getMyDepartment();
         if (myDep == null) return;
-        System.out.println(myDep);
         List<Agent> employees = agentService.getEmployeesOnDepartment(myDep.getId());
         if (employees.isEmpty()) {
             menuService.showError("No employees in your department.");
@@ -269,7 +268,6 @@ public class ManagerMenu extends BaseMenu {
             menuService.showError("Invalid selection.");
             return -1;
         }
-        System.out.println(employees.get(choice - 1));
         return employees.get(choice - 1).getId();
     }
 }

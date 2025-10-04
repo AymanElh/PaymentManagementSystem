@@ -83,37 +83,40 @@ public class DirectorMenu extends BaseMenu {
     }
 
     private void createNewManager() {
-        menuService.displayHeader("Enter manager info");
+        menuService.displayHeader("Enter Manager Information");
         String firstName = menuService.readString("First Name");
         String lastName = menuService.readString("Last Name");
         String email = menuService.readString("Email");
         String password = menuService.readString("Password");
         String phone = menuService.readString("Phone");
-        String startDate = menuService.readString("Start date");
+        String startDate = menuService.readString("Start date (YYYY-MM-dd)");
         double salary = menuService.readDouble("Salary");
 
         try {
-            Date date = (new SimpleDateFormat("YYYY-mm-dd")).parse(startDate);
+            Date date = (new SimpleDateFormat("yyyy-MM-dd")).parse(startDate);
             Department dep = chooseDepartmentForManager();
+            if (dep == null) {
+                menuService.showError("Department selection cancelled or invalid.");
+                return;
+            }
             Agent agent = new Agent(firstName, lastName, email, password, phone, date, salary, dep);
             agentService.addManager(agent);
+            menuService.showSuccess("Manager '" + firstName + " " + lastName + "' added successfully!");
         }catch (ParseException e) {
-            System.out.println("Error parsing date: " + e.getMessage());
+            menuService.showError("Invalid date format. Please use YYYY-MM-dd format.");
         } catch (Exception e) {
-            System.out.println("Error in adding manager: " + e.getMessage());
-            return;
+            menuService.showError("Error adding manager: " + e.getMessage());
         }
-
     }
 
     private Department chooseDepartmentForManager() {
         List<Department> departments = departmentService.getAllDepartments();
         if (departments.isEmpty()) {
-            System.out.println("There no department yet");
+            menuService.showError("No departments available yet.");
             return null;
         }
 
-        menuService.displayHeader(" -- Choose a department --");
+        menuService.displayTitle("Select Department");
 
         List<MenuItem> departmentMenuItems = new ArrayList<>();
         for (int i = 0; i < departments.size(); i++) {
@@ -121,10 +124,10 @@ public class DirectorMenu extends BaseMenu {
             departmentMenuItems.add(new MenuItem(i + 1, dep.getName()));
         }
 
-        int deptChoice = menuService.displayMenuAndGetChoice("Enter you choice", departmentMenuItems);
+        int deptChoice = menuService.displayMenuAndGetChoice("Choose department", departmentMenuItems);
 
         if (deptChoice < 1 || deptChoice > departments.size()) {
-            System.out.println("Invalid department selection.");
+            menuService.showError("Invalid department selection.");
             return null;
         }
 
@@ -134,18 +137,19 @@ public class DirectorMenu extends BaseMenu {
 
 
     private void createNewDepartment() {
-        menuService.displayHeader("Enter department info");
-        String name = menuService.readString("Name");
+        menuService.displayHeader("Create New Department");
+        String name = menuService.readString("Department Name");
         String description = menuService.readString("Description");
         Department created = departmentService.addDepartment(new Department(name, description));
         if (created == null) {
             menuService.showError("Department '" + name + "' already exists or could not be created.");
         } else {
-            menuService.showSuccess("Department '" + created.getName() + "' created successfully.");
+            menuService.showSuccess("Department '" + created.getName() + "' created successfully!");
         }
     }
 
     private void deleteDepartment() {
+        menuService.displayTitle("Delete Department");
         Department department = chooseDepartmentForManager();
         if (department == null) {
             menuService.showError("No department selected or available.");
@@ -154,33 +158,68 @@ public class DirectorMenu extends BaseMenu {
 
         Department deleted = departmentService.deleteDepartment(department.getId());
         if (deleted == null) {
-            menuService.showError("Cannot delete department. It may have assigned agents (manager or employees) or does not exist.");
+            menuService.showError("Cannot delete department. It may have assigned agents or does not exist.");
         } else {
-            menuService.showSuccess("Department '" + deleted.getName() + "' deleted successfully.");
+            menuService.showSuccess("Department '" + deleted.getName() + "' deleted successfully!");
         }
     }
 
     private void viewAllDepartments() {
         List<Department> departments = departmentService.getAllDepartments();
-        for(Department department: departments) {
-            System.out.println(department);
+
+        if (departments.isEmpty()) {
+            menuService.showError("No departments found.");
+            return;
         }
+
+        menuService.displayHeader("All Departments");
+        System.out.printf("  %-5s %-25s %-40s%n", "ID", "Name", "Description");
+        menuService.displaySeperator();
+
+        for(Department department: departments) {
+            System.out.printf("  %-5d %-25s %-40s%n",
+                department.getId(),
+                department.getName(),
+                department.getDescription());
+        }
+
+        System.out.println();
     }
 
     private void updateDepartmentManager() {
-        menuService.displayTitle("Choose the department");
+        menuService.displayHeader("Update Department Manager");
+        menuService.displayTitle("Step 1: Choose Department");
         Department department = chooseDepartmentForManager();
 
-        List<Agent> agentsOnThisDep = agentService.getEmployeesOnDepartment(department.getId());
-        List<MenuItem> menuItems = new ArrayList<>();
-        for(int i = 0; i < agentsOnThisDep.size(); i++) {
-            menuItems.add(new MenuItem(i+1, agentsOnThisDep.get(i).getFirstName() + " | " + agentsOnThisDep.get(i).getLastName()));
+        if (department == null) {
+            menuService.showError("Department selection cancelled.");
+            return;
         }
 
-        int choice = menuService.displayMenuAndGetChoice("Choose the employee to be the new manager", menuItems);
+        List<Agent> agentsOnThisDep = agentService.getEmployeesOnDepartment(department.getId());
+
+        if (agentsOnThisDep.isEmpty()) {
+            menuService.showError("No employees found in department '" + department.getName() + "'.");
+            return;
+        }
+
+        menuService.displayTitle("Step 2: Select New Manager");
+
+        List<MenuItem> menuItems = new ArrayList<>();
+        for(int i = 0; i < agentsOnThisDep.size(); i++) {
+            Agent agent = agentsOnThisDep.get(i);
+            menuItems.add(new MenuItem(i+1, agent.getFirstName() + " " + agent.getLastName() + " (ID: " + agent.getId() + ")"));
+        }
+
+        int choice = menuService.displayMenuAndGetChoice("Choose the employee to promote", menuItems);
+
+        if (choice < 1 || choice > agentsOnThisDep.size()) {
+            menuService.showError("Invalid employee selection.");
+            return;
+        }
 
         Agent manager = agentService.updateDepartmentManager(agentsOnThisDep.get(choice - 1), department.getId());
-        System.out.println("Manager updated successfully, new manager:  \n6" + manager);
+        menuService.showSuccess("Manager updated successfully!\n  👤 New Manager: " + manager.getFirstName() + " " + manager.getLastName());
     }
 
     private void getAllManagers() {
@@ -192,12 +231,12 @@ public class DirectorMenu extends BaseMenu {
         }
 
         menuService.displayHeader("All Managers");
-        System.out.printf("%-5s %-15s %-15s %-20s%n", "ID", "First Name", "Last Name", "Department");
-        System.out.println("─".repeat(60));
+        System.out.printf("  %-5s %-20s %-20s %-25s%n", "ID", "First Name", "Last Name", "Department");
+        menuService.displaySeperator();
 
         for (Agent agent : agents) {
             String departmentName = (agent.getDepartment() != null) ? agent.getDepartment().getName() : "No Department";
-            System.out.printf("%-5d %-15s %-15s %-20s%n",
+            System.out.printf("  %-5d %-20s %-20s %-25s%n",
                 agent.getId(),
                 agent.getFirstName(),
                 agent.getLastName(),
@@ -208,9 +247,22 @@ public class DirectorMenu extends BaseMenu {
 
     private void getDistributionByPaymentType() {
         Map<PaymentType, Double> paymentDistribution = statisticsService.distibutionOfPaymentByType();
-        System.out.println(paymentDistribution);
-        for(PaymentType type: paymentDistribution.keySet()) {
-            System.out.println(type.name() + ": " + paymentDistribution.get(type) + "%");
+
+        if (paymentDistribution.isEmpty()) {
+            menuService.showError("No payment data available.");
+            return;
         }
+
+        menuService.displayHeader("Payment Distribution by Type");
+        menuService.displaySeperator();
+
+        for(PaymentType type: paymentDistribution.keySet()) {
+            double percentage = paymentDistribution.get(type);
+            String bar = "█".repeat((int)(percentage / 2)); // Simple bar chart
+            System.out.printf("  %-15s : %6.2f%% %s%n", type.name(), percentage, bar);
+        }
+
+        System.out.println();
+        menuService.displaySeperator();
     }
 }

@@ -176,7 +176,7 @@ public class AgentDAOImp implements AgentDAO {
     public Agent findById(int id) {
         String query = """
                     SELECT a.id, u.id as user_id, u.first_name, u.last_name, u.email, u.password, u.phone, 
-                    a.type, a.start_date, a.salary, a.is_active, d.id AS department_id, d.name AS department_name, d.description AS department_description1
+                    a.type, a.start_date, a.salary, a.is_active, d.id AS department_id, d.name AS department_name, d.description AS department_description
                     FROM users u
                     JOIN agents a ON a.user_id = u.id
                     JOIN departments d ON d.id = a.department_id
