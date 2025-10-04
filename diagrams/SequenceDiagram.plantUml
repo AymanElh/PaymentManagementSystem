@@ -1,0 +1,114 @@
+@startuml
+actor User
+participant "ConsoleView" as CV
+participant "AuthService" as AS
+participant "AgentRepository" as AR
+participant "ManagerMenu" as MM
+participant "AgentService" as AGS
+participant "AgentValidator" as AV
+participant "AgentDAO" as DAO
+database "Database" as DB
+
+== Login Flow ==
+User -> CV: Select Login (choice 1)
+activate CV
+
+CV -> User: Request email and password
+User -> CV: Enter credentials
+
+CV -> AS: Login request
+activate AS
+
+AS -> AR: Check agent credentials
+activate AR
+
+alt Invalid credentials or agent not found
+    AR --> AS: Authentication failed
+    deactivate AR
+    AS --> CV: Error
+    deactivate AS
+    CV -> User: Show error message
+    CV -> User: Show menu again
+
+else Valid credentials
+    AR --> AS: Agent found
+    deactivate AR
+    AS --> CV: LoginSession created
+    deactivate AS
+
+    CV -> User: Show success message
+
+    alt Agent is MANAGER
+        CV -> MM: Create and show ManagerMenu
+        activate MM
+        MM -> User: Display manager menu
+
+        == Create Employee Flow ==
+        User -> MM: Select "Create employee" (choice 1)
+
+        MM -> User: Request employee information
+        User -> MM: Enter employee data\n(firstName, lastName, email, password, etc.)
+
+        MM -> AGS: addEmployee(agent)
+        activate AGS
+
+        AGS -> AV: Validate employee data
+        activate AV
+
+        alt Validation fails
+            AV --> AGS: Validation error
+            deactivate AV
+            AGS --> MM: throw ValidationException
+            deactivate AGS
+            MM -> User: Show error message
+            MM -> User: Display menu again
+
+        else Validation passes
+            AV --> AGS: Data is valid
+            deactivate AV
+
+            AGS -> AGS: Set AgentType to EMPLOYEE
+            AGS -> AGS: Hash password
+
+            AGS -> AR: createAgent(agent)
+            activate AR
+
+            AR -> DAO: save(agent)
+            activate DAO
+
+            DAO -> DB: INSERT INTO users table
+            activate DB
+            DB --> DAO: User created
+
+            DAO -> DB: INSERT INTO agents table
+            DB --> DAO: Agent created
+            deactivate DB
+
+            alt Database error
+                DAO --> AR: Return null
+                deactivate DAO
+                AR --> AGS: Return null
+                deactivate AR
+                AGS --> MM: Return null
+                deactivate AGS
+                MM -> User: Show error message
+
+            else Success
+                DAO --> AR: Return created agent
+                deactivate DAO
+                AR --> AGS: Return agent
+                deactivate AR
+                AGS --> MM: Return created employee
+                deactivate AGS
+                MM -> User: Show success message
+                MM -> User: Display menu again
+            end
+        end
+
+        deactivate MM
+    end
+end
+
+deactivate CV
+
+@enduml
