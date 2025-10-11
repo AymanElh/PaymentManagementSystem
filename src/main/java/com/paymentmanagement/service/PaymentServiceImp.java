@@ -84,4 +84,15 @@ public class PaymentServiceImp implements PaymentService{
 
         return minMaxPayments;
     }
+
+    public List<Payment> getPaymentsByMonths(int agentId, int month) {
+        List<Payment> paymentsByAgent = getPaymentsByAgent(agentId);
+        System.out.println(paymentsByAgent);
+        return paymentsByAgent.stream()
+                .filter(payment -> {
+                    System.out.println(payment.getPaymentDate().getMonth());
+                    return payment.getPaymentDate().getMonth()  == month - 1;
+                })
+                .collect(Collectors.toList());
+    }
 }

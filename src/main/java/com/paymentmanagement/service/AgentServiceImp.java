@@ -4,6 +4,7 @@ import com.paymentmanagement.exception.EntityNotFoundException;
 import com.paymentmanagement.exception.ValidationException;
 import com.paymentmanagement.model.Agent;
 import com.paymentmanagement.model.AgentType;
+import com.paymentmanagement.model.Payment;
 import com.paymentmanagement.repository.AgentRepository;
 import com.paymentmanagement.util.PasswordUtils;
 import com.paymentmanagement.validation.AgentValidator;
@@ -78,4 +79,5 @@ public class AgentServiceImp implements AgentService {
                 .filter(agent ->  agent.getAgentType() == AgentType.MANAGER)
                 .collect(Collectors.toList());
     }
+
 }
